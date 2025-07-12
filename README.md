@@ -21,7 +21,7 @@ The output is well-suited for buzzer playback using PWM or tone-generating libra
 ## Example
 
 ```python
-note_string = "B B ^C#-^D-B ^D ^E ^C#-B ^C#-B-A"
+input: "B B ^C#-^D-B ^D ^E ^C#-B ^C#-B-A"
 output: ([493, 0.1], [493, 0.1], [554, 0.05], [622, 0], [493, 0.1], [622, 0.1], [698, 0.1], [554, 0.05], [493, 0.1], [554, 0.05], [493, 0], [440, 0.05])
 ```
 
@@ -37,11 +37,21 @@ output: ([493, 0.1], [493, 0.1], [554, 0.05], [622, 0], [493, 0.1], [622, 0.1], 
 
 ---
 
+## Disclaimer
+> I'm not a musician, just a hobbyist with an interest in electronics and coding.
+> So, if some notes or timing seem off, it's totally possible.
+> This was a fun experiment, and contributions or corrections are welcome.
+
+---
+
 ## Use Cases
 
 - ESP32, Arduino, Raspberry Pi buzzer playback
 - Educational sound experiments
 - Converting text-based music into timing instructions
+
+### Target Use Case
+Designed for use in MicroPython or Arduino projects, especially on the ESP32, where you want to play simple tunes using a buzzer.
 
 ---
 
