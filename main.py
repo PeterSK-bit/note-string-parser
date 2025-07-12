@@ -1,3 +1,6 @@
+import argparse
+from string import ascii_letters, digits
+
 def count_spaces_between_letters(note_string: str, start_index: int) -> int:
     """
     Count spaces between the current note and the next one in the string.
@@ -13,7 +16,7 @@ def is_sharp_note(notes: str, index: int) -> bool:
     """
     Checks if the note at a given index is sharp.
     """
-    
+
     return (index > 0 and notes[index - 1] == "^") or (index + 1 < len(notes) and notes[index + 1] == "#")
 
 def get_frequency_pause(notes: str) -> tuple[list[int], list[float]]:
@@ -54,9 +57,54 @@ def get_frequency_pause(notes: str) -> tuple[list[int], list[float]]:
     return tuple(result)
 
 def main():
-    note_string = input("Insert notes: ")
+    parser = argparse.ArgumentParser(description="Convert note string to frequency/pause sequence.")
+    parser.add_argument("note_string", nargs="?", help="String of notes (optional)")
+    parser.add_argument("--output", "-o", help="Name of the output .txt file (optional)")
+    args = parser.parse_args()
+
+    # Ask for note string if not provided as argument
+    if not args.note_string:
+        note_string = input("Enter your note string: ").strip()
+    else:
+        note_string = args.note_string
+
     sequence = get_frequency_pause(note_string)
-    print(sequence)
+
+    # Ask whether to write to file if --output was not used
+    if args.output is None:
+        choice = input("Do you want to save the output to a file? [y/N]: ").strip().lower()
+        if choice == "y":
+            output_file = input("Enter output file name: ").strip()
+
+            # Sanitize filename
+            safe_chars = ascii_letters + digits + "-_."
+            output_file = "".join(c for c in output_file if c in safe_chars)
+            if not output_file:
+                print("INFO: Invalid filename. Using default name 'output.txt'")
+                output_file = "output.txt"
+
+            with open(output_file, "w") as f:
+                for freq, pause in sequence:
+                    f.write(f"{freq},{pause}\n")
+
+            print(f"INFO: Output written to {output_file}")
+        else:
+            print("INFO: Output (console):")
+            for freq, pause in sequence:
+                print(f"{freq},{pause}")
+    else:
+        # If --output is used, sanitize and write directly
+        safe_chars = ascii_letters + digits + "-_."
+        output_file = "".join(c for c in args.output if c in safe_chars)
+        if not output_file:
+            print("INFO: Invalid filename. Using default name 'output.txt'")
+            output_file = "output.txt"
+
+        with open(output_file, "w") as f:
+            for freq, pause in sequence:
+                f.write(f"{freq},{pause}\n")
+
+        print(f"INFO: Output written to {output_file}")
 
 if __name__ == "__main__":
     main()
