@@ -1,5 +1,6 @@
 import argparse
 from string import ascii_letters, digits
+import json
 
 def count_spaces_between_letters(note_string: str, start_index: int) -> int:
     """
@@ -54,11 +55,39 @@ def get_frequency_pause(notes: str) -> tuple[list[int], list[float]]:
 
         result.append([freq, pause])
 
-    return tuple(result)
+    return result
+
+def write_output(sequence, output_file, format):
+    with open(output_file, "w") as f:
+        if format == "python":
+            f.write(str(sequence))
+        elif format == "json":
+            json.dump(sequence, f, indent=2)
+        elif format == "csv":
+            for freq, pause in sequence:
+                f.write(f"{freq},{pause}\n")
+        elif format == "cpp":
+            f.write("std::vector<std::pair<int, float>> notes = {\n")
+            for freq, pause in sequence:
+                f.write(f"  {{{freq}, {pause}f}},\n")
+            f.write("};\n")
+        else:
+            raise ValueError("Unsupported format")
+        
+def sanitize_file_name(name):
+    safe_chars = ascii_letters + digits + "-_."
+    output_file = "".join(c for c in name if c in safe_chars)
+
+    if not output_file:
+        print("INFO: Invalid filename. Using default name 'output.txt'")
+        return "output.txt"
+    
+    return output_file
 
 def main():
     parser = argparse.ArgumentParser(description="Convert note string to frequency/pause sequence.")
     parser.add_argument("note_string", nargs="?", help="String of notes (optional)")
+    parser.add_argument( "--format", choices=["python", "json", "csv", "cpp"], default="python", help="Output format: python, json, csv, or cpp (default: python)")
     parser.add_argument("--output", "-o", help="Name of the output .txt file (optional)")
     args = parser.parse_args()
 
@@ -77,34 +106,41 @@ def main():
             output_file = input("Enter output file name: ").strip()
 
             # Sanitize filename
-            safe_chars = ascii_letters + digits + "-_."
-            output_file = "".join(c for c in output_file if c in safe_chars)
-            if not output_file:
-                print("INFO: Invalid filename. Using default name 'output.txt'")
-                output_file = "output.txt"
+            output_file = sanitize_file_name(output_file)
 
-            with open(output_file, "w") as f:
-                for freq, pause in sequence:
-                    f.write(f"{freq},{pause}\n")
+            try:
+                write_output(sequence, output_file, args.format)
+                print(f"INFO: Output written to {output_file} in {args.format} format")
+            except ValueError as e:
+                print(f"ERROR: {e}")
 
-            print(f"INFO: Output written to {output_file}")
         else:
             print("INFO: Output (console):")
-            for freq, pause in sequence:
-                print(f"{freq},{pause}")
+            if args.format == "python":
+                print(sequence)
+            elif args.format == "json":
+                print(json.dumps(sequence, indent=2))
+            elif args.format == "csv":
+                for freq, pause in sequence:
+                    print(f"{freq},{pause}")
+            elif args.format == "cpp":
+                print("std::vector<std::pair<int, float>> notes = {")
+                for freq, pause in sequence:
+                    print(f"  {{{freq}, {pause}f}},")
+                print("};")
+            else:
+                raise ValueError("Unsupported format")
+
     else:
         # If --output is used, sanitize and write directly
-        safe_chars = ascii_letters + digits + "-_."
-        output_file = "".join(c for c in args.output if c in safe_chars)
-        if not output_file:
-            print("INFO: Invalid filename. Using default name 'output.txt'")
-            output_file = "output.txt"
+        output_file = sanitize_file_name(args.output)
 
-        with open(output_file, "w") as f:
-            for freq, pause in sequence:
-                f.write(f"{freq},{pause}\n")
+        try:
+            write_output(sequence, output_file, args.format)
+            print(f"INFO: Output written to {output_file} in {args.format} format")
+        except ValueError as e:
+            print(f"ERROR: {e}")
 
-        print(f"INFO: Output written to {output_file}")
 
 if __name__ == "__main__":
     main()

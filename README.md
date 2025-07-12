@@ -38,9 +38,10 @@ output: ([493, 0.1], [493, 0.1], [554, 0.05], [622, 0], [493, 0.1], [622, 0.1], 
 ---
 
 ## Disclaimer
-> I'm not a musician, just a hobbyist with an interest in electronics and coding.
-> So, if some notes or timing seem off, it's totally possible.
-> This was a fun experiment, and contributions or corrections are welcome.
+
+> I'm not a music theory expert — this tool is based on basic note-to-frequency mapping and simple rules for pauses.
+> If you're a musician, results may not be musically precise.
+> Contributions and feedback welcome!
 
 ---
 
